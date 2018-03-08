@@ -3,6 +3,29 @@
 #include <string.h>
 #define LineSize 1024
 
+static int NameSlot;
+
+
+int setNameSlot(char *line) 
+{
+    NameSlot = 0;
+    
+    //separate by ,
+    char *token = strtok(line, ",");
+    int flag = strcmp(token, "\"name\"");
+
+    //exit if all token traversed or name is found
+    while ((token = strtok(NULL, ",")) != NULL && flag)
+    {
+        flag = strcmp(token, "\"name\"");
+        NameSlot++;
+    }
+
+    //name not found
+    if (flag) 
+        return -1; 
+    return 0;
+}
 int main(int argc, char *argv[])
 {
     //check if argv is right 
@@ -22,14 +45,23 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    //read file
+    //read first line and get NameSlot
     char line[LineSize];
+    fgets(line, LineSize, file);
+    setNameSlot(line);
+    
+    //iterate remain lines to get name
     while (fgets(line, LineSize, file))
     {
         char *tmp = strdup(line);
+        tmp = strtok(tmp, ",");
+
+        //go to name 
+        for (int i = 0; i < NameSlot; i++)
+            tmp = strtok(NULL, ",");
         printf("%s\n", tmp);
-        free(tmp);
     }
 
+    fclose(file);
     return 0;
 }
