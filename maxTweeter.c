@@ -73,7 +73,8 @@ entry_t *newEntry(char *key)
     if ((e->key = strdup(key)) == NULL)
         return NULL;
 
-    e->value = 0;
+    //first time
+    e->value = 1;
 
     return e;
 }
@@ -142,6 +143,22 @@ int get(hashtable_t *ht, char *key)
 
 static int NameSlot;
 
+void HashTableIter(hashtable_t *ht)
+{
+    for (int i = 0; i < ht->size; i++) 
+    {   
+        //enpty entry
+        if (ht->table[i] == NULL)
+            continue;
+
+        entry_t *e = ht->table[i];
+        while (e != NULL) {
+            printf("entry: %s times: %d\n", e->key, e->value);
+            e = e->next;
+        }
+    }
+}
+
 int setNameSlot(char *line)
 {
     NameSlot = 0;
@@ -198,9 +215,12 @@ int main(int argc, char *argv[])
     set(ht, "zero");
     set(ht, "zero");
 
-    printf("%d\n", get(ht, "neva"));
+    /*printf("%d\n", get(ht, "neva"));
     printf("%d\n", get(ht, "rick"));
     printf("%d\n", get(ht, "zero"));
+    */
+
+    HashTableIter(ht);
     //iterate remain lines to get name
     /*while (fgets(line, LineSize, file))
     {
