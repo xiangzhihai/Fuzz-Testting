@@ -209,18 +209,18 @@ int main(int argc, char *argv[])
     }
 
     hashtable_t *ht = create(65536);
-    set(ht, "zero");
+    /*set(ht, "zero");
     set(ht, "neva");
     set(ht, "rick");
     set(ht, "zero");
     set(ht, "zero");
 
-    /*printf("%d\n", get(ht, "neva"));
+    printf("%d\n", get(ht, "neva"));
     printf("%d\n", get(ht, "rick"));
-    printf("%d\n", get(ht, "zero"));
-    */
+    printf("%d\n", get(ht, "zero"));*/
+    
 
-    HashTableIter(ht);
+    
     //iterate remain lines to get name
     /*while (fgets(line, LineSize, file))
     {
@@ -232,8 +232,18 @@ int main(int argc, char *argv[])
             tmp = strtok(NULL, ",");
         printf("%s\n", tmp);
     }*/
+    for (int j = 0; j < 10; j++)
+    {
+        fgets(line, LineSize, file);
+        char *tmp = strdup(line);
+        tmp = strtok(tmp, ",");
 
-
+        //go to name
+        for (int i = 0; i < NameSlot; i++)
+            tmp = strtok(NULL, ",");
+        set(ht, tmp);
+    }
+    HashTableIter(ht);
 
     fclose(file);
     return 0;
