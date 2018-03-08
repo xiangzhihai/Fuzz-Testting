@@ -5,11 +5,10 @@
 
 static int NameSlot;
 
-
-int setNameSlot(char *line) 
+int setNameSlot(char *line)
 {
     NameSlot = 0;
-    
+
     //separate by ,
     char *token = strtok(line, ",");
     int flag = strcmp(token, "\"name\"");
@@ -22,13 +21,14 @@ int setNameSlot(char *line)
     }
 
     //name not found
-    if (flag) 
-        return -1; 
+    if (flag)
+        return -1;
     return 0;
 }
+
 int main(int argc, char *argv[])
 {
-    //check if argv is right 
+    //check if argv is right
     if (argc != 2)
     {
         printf("Please enter File path as the second argument\n");
@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
     FILE *file = fopen("/Users/zhihaixiang/Documents/ECS160/stream/cl-tweets-short.csv", "r");
 
     //check if its successfully read
-    if(file == NULL)
+    if (file == NULL)
     {
         printf("Fail to open\n");
         exit(1);
@@ -48,15 +48,19 @@ int main(int argc, char *argv[])
     //read first line and get NameSlot
     char line[LineSize];
     fgets(line, LineSize, file);
-    setNameSlot(line);
-    
+    if (setNameSlot(line))
+    {
+        printf("there is no name\n");
+        exit(1);
+    }
+
     //iterate remain lines to get name
     while (fgets(line, LineSize, file))
     {
         char *tmp = strdup(line);
         tmp = strtok(tmp, ",");
 
-        //go to name 
+        //go to name
         for (int i = 0; i < NameSlot; i++)
             tmp = strtok(NULL, ",");
         printf("%s\n", tmp);
