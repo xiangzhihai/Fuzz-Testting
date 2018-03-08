@@ -4,7 +4,8 @@
 #include <limits.h>
 
 #define LineSize 1024
-
+#define HashTableSize 65536
+#define ResultSize 10
 /*
  * hash table
  */
@@ -141,10 +142,87 @@ int get(hashtable_t *ht, char *key)
  * end of hash table
  */
 
+
+
+
+
+/*
+ * result linked list
+ */
+
+typedef struct node 
+{
+    char *name;
+    int times;
+    struct node *next;
+} NODE;
+
+typedef struct list 
+{
+    int size;
+    struct node *head;
+} LIST;
+
+LIST *listCreate() {
+    LIST *l = NULL;
+
+    if ((l = malloc(sizeof(LIST))) == NULL)
+        return NULL;
+
+    l->size = 0;
+    return l;
+}
+
+void listAdd(LIST *list, entry_t *e)
+{
+    //check list and entry exit
+    if (list == NULL || e == NULL)
+        return;
+
+    NODE *newNode = malloc(sizeof(NODE)), *lastNode = NULL, *Node = list->head;
+    newNode->name = strdup(e->key);
+    newNode->times = e->value;
+
+    //iterate thourgh the linked list
+    for (int i = 0; i < ResultSize; i++)
+    {
+        lastNode = Node;
+        //list is not even full
+        if (Node == NULL)
+        {
+            if (i == 0) //head
+            {
+                list->head = newNode;
+                list->size++;
+                return;
+            }
+            
+            newNode->next = NULL;
+            lastNode->next = newNode;
+            list->size++;
+            break;
+        } 
+
+        if (Node->times < newNode->times) //larger
+        {   
+            newNode->next = lastNode->next;
+            lastNode->next = newNode;
+            list->size++;
+            break;
+        }
+        Node = Node->next;
+    }
+}
+
+/*
+ * linked list end
+ */
+
 static int NameSlot;
 
 void HashTableIter(hashtable_t *ht)
 {
+    //LIST *list = listCreate();
     for (int i = 0; i < ht->size; i++) 
     {   
         //enpty entry
@@ -208,33 +286,14 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    hashtable_t *ht = create(65536);
-    /*set(ht, "zero");
-    set(ht, "neva");
-    set(ht, "rick");
-    set(ht, "zero");
-    set(ht, "zero");
+    //create hash table
+    hashtable_t *ht = create(HashTableSize);
+    if (ht == NULL)
+        exit(1);
 
-    printf("%d\n", get(ht, "neva"));
-    printf("%d\n", get(ht, "rick"));
-    printf("%d\n", get(ht, "zero"));*/
-    
-
-    
     //iterate remain lines to get name
-    /*while (fgets(line, LineSize, file))
+    while (fgets(line, LineSize, file))
     {
-        char *tmp = strdup(line);
-        tmp = strtok(tmp, ",");
-
-        //go to name
-        for (int i = 0; i < NameSlot; i++)
-            tmp = strtok(NULL, ",");
-        printf("%s\n", tmp);
-    }*/
-    for (int j = 0; j < 10; j++)
-    {
-        fgets(line, LineSize, file);
         char *tmp = strdup(line);
         tmp = strtok(tmp, ",");
 
@@ -243,6 +302,7 @@ int main(int argc, char *argv[])
             tmp = strtok(NULL, ",");
         set(ht, tmp);
     }
+
     HashTableIter(ht);
 
     fclose(file);
