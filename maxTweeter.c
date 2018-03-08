@@ -186,7 +186,6 @@ void listAdd(LIST *list, entry_t *e)
     //iterate thourgh the linked list
     for (int i = 0; i < ResultSize; i++)
     {
-        lastNode = Node;
         //list is not even full
         if (Node == NULL)
         {
@@ -200,16 +199,25 @@ void listAdd(LIST *list, entry_t *e)
             newNode->next = NULL;
             lastNode->next = newNode;
             list->size++;
-            break;
+            return;
         } 
 
         if (Node->times < newNode->times) //larger
         {   
+            if (i == 0)
+            {
+                list->head->next = newNode->next;
+                list->head = newNode;
+                list->size++;
+                return;
+            }
+
             newNode->next = lastNode->next;
             lastNode->next = newNode;
             list->size++;
-            break;
+            return;
         }
+        lastNode = Node;
         Node = Node->next;
     }
 }
@@ -222,7 +230,7 @@ static int NameSlot;
 
 void HashTableIter(hashtable_t *ht)
 {
-    //LIST *list = listCreate();
+    LIST *list = listCreate();
     for (int i = 0; i < ht->size; i++) 
     {   
         //enpty entry
@@ -231,9 +239,16 @@ void HashTableIter(hashtable_t *ht)
 
         entry_t *e = ht->table[i];
         while (e != NULL) {
-            printf("entry: %s times: %d\n", e->key, e->value);
+            listAdd(list, e);
             e = e->next;
         }
+    }
+    NODE *Node = list->head;
+    //print result
+    for (int i = 0; i < ResultSize; i++)
+    {
+        printf("%s:%d\n", Node->name, Node->times);
+        Node = Node->next;
     }
 }
 
