@@ -249,6 +249,8 @@ void HashTableIter(hashtable_t *ht)
     //print result
     for (int i = 0; i < ResultSize; i++)
     {
+        if (Node == NULL)
+            return;
         printf("%s:%d\n", Node->name, Node->times);
         Node = Node->next;
     }
@@ -270,9 +272,7 @@ int setNameSlot(char *line)
     }
 
     //name not found
-    if (flag)
-        return -1;
-    return 0;
+    return flag;
 }
 
 int main(int argc, char *argv[])
