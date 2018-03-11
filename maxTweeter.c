@@ -206,8 +206,8 @@ void listAdd(LIST *list, entry_t *e)
         {   
             if (i == 0)
             {
-                list->head->next = newNode->next;
                 list->head = newNode;
+                newNode->next = Node;
                 list->size++;
                 return;
             }
@@ -238,11 +238,13 @@ void HashTableIter(hashtable_t *ht)
             continue;
 
         entry_t *e = ht->table[i];
-        while (e != NULL) {
+        while (e != NULL) 
+        {
             listAdd(list, e);
             e = e->next;
         }
     }
+
     NODE *Node = list->head;
     //print result
     for (int i = 0; i < ResultSize; i++)
@@ -283,7 +285,7 @@ int main(int argc, char *argv[])
     }
 
     //open cvs file for reading only
-    FILE *file = fopen("/Users/zhihaixiang/Documents/ECS160/stream/cl-tweets-short.csv", "r");
+    FILE *file = fopen(argv[1], "r");
 
     //check if its successfully read
     if (file == NULL)
